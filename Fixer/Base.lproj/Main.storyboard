@@ -59,7 +59,7 @@
         <scene sceneID="FTw-Bi-DwE">
             <objects>
                 <tableViewController id="rNM-BR-G36" customClass="CurrencyConversionTableViewController" customModule="Fixer" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" keyboardDismissMode="onDrag" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="64" estimatedRowHeight="56" sectionHeaderHeight="28" sectionFooterHeight="28" id="Hca-5m-jrA">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" keyboardDismissMode="onDrag" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="64" estimatedRowHeight="56" sectionHeaderHeight="28" sectionFooterHeight="28" id="Hca-5m-jrA">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -173,7 +173,13 @@
                             <outlet property="delegate" destination="rNM-BR-G36" id="kae-AT-Hpe"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Convert" id="cGN-ya-aW7"/>
+                    <navigationItem key="navigationItem" title="Convert" id="cGN-ya-aW7">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="601-DI-EJA">
+                            <connections>
+                                <action selector="addCurrency:" destination="rNM-BR-G36" id="NJf-bz-1SX"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <segue destination="fY5-Qg-Xk5" kind="show" identifier="showCurrencySegueIdentifier" id="FvW-F4-b0c"/>
                     </connections>

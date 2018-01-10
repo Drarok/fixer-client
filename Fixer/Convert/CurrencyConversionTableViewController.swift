@@ -32,6 +32,8 @@ class CurrencyConversionTableViewController: UITableViewController {
     var currentSections = 2
     var currentDate = Date()
 
+    // MARK: - View lifecycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -41,8 +43,6 @@ class CurrencyConversionTableViewController: UITableViewController {
 
         // Hide separators for non-existent cells
         tableView.tableFooterView = UIView()
-
-        tableView.keyboardDismissMode = .interactive
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -63,14 +63,30 @@ class CurrencyConversionTableViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let destination = segue.destination as? CurrencyListTableViewController {
             destination.delegate = self
+
+            // When adding a currency, only present the options to the user they don't already have
+            if currentCurrencyIndex == -1 {
+                destination.currencies = Currency.all.filter { !currencies.contains($0) }
+            }
         }
     }
 
-    // Update the *other* input cell, not the one the user is using
+    // MARK: - Actions
+
+    @IBAction func addCurrency(_ sender: Any) {
+        currentCurrencyIndex = -1
+        self.performSegue(withIdentifier: Key.showCurrencySegueIdentifier, sender: nil)
+    }
+
+    // MARK: - Other
+
+    // Update the *other* input cells, not the one the user is using
     private func updateInputCells(senderIndex index: Int) {
-        let otherIndex = index == 0 ? 1 : 0
-        let otherRow = IndexPath(row: otherIndex, section: 0)
-        tableView.reloadRows(at: [otherRow], with: .none)
+        let rowsToReload = (0..<currencies.endIndex)
+            .filter { $0 != index }
+            .map { IndexPath(row: $0, section: 0) }
+
+        tableView.reloadRows(at: rowsToReload, with: .none)
     }
 
     private func fetchRates(showUpdates: Bool = true) {
@@ -193,12 +209,15 @@ extension TableViewDataSource {
         } else if let cell = cell as? SelectDateTableViewCell {
             cell.delegate = self
             cell.datePicker.date = currentDate
-        } else {
-            if indexPath.section == 1 {
-                cell.textLabel?.text = nil
-                cell.detailTextLabel?.text = dateFormatter.string(from: currentDate)
-            }
+        } else if indexPath.section == 1 {
+            cell.textLabel?.text = nil
+            cell.detailTextLabel?.text = dateFormatter.string(from: currentDate)
         }
+    }
+
+    override func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        // Block highlight of anything except the "current date" section
+        return indexPath.section == 1
     }
 
     override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
@@ -223,6 +242,20 @@ extension TableViewDataSource {
         }
 
         return indexPath
+    }
+
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        // Only items in section 0 are editable
+        return indexPath.section == 0
+    }
+
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle != .delete {
+            return
+        }
+
+        currencies.remove(at: indexPath.row)
+        tableView.deleteRows(at: [indexPath], with: .automatic)
     }
 
 }
@@ -266,6 +299,11 @@ private typealias CurrencyListDelegate = CurrencyConversionTableViewController
 extension CurrencyListDelegate: CurrencyListTableViewControllerDelegate {
 
     func didSelectCurrency(currency: Currency) {
+        if currentCurrencyIndex == -1 {
+            currencies.append(currency)
+            return
+        }
+
         currencies[currentCurrencyIndex] = currency
         updateInputCells(senderIndex: currentCurrencyIndex)
     }

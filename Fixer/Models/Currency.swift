@@ -71,3 +71,11 @@ struct Currency {
     }
 
 }
+
+extension Currency: Equatable {
+
+    static func ==(lhs: Currency, rhs: Currency) -> Bool {
+        return lhs.id == rhs.id
+    }
+
+}
