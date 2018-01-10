@@ -34,6 +34,13 @@ class CurrencyTableViewCell: UITableViewCell {
         }
     }
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+
+        indexPath = nil
+        delegate = nil
+    }
+
     @IBAction func editingDidBegin(_ sender: Any) {
         guard let field = sender as? UITextField else {
             return

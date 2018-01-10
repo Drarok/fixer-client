@@ -20,6 +20,12 @@ class SelectDateTableViewCell: UITableViewCell {
 
     var delegate: SelectDateTableViewCellDelegate?
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+
+        delegate = nil
+    }
+
     @IBAction func datePickerChanged(_ sender: Any) {
         guard let date = (sender as? UIDatePicker)?.date else {
             return
