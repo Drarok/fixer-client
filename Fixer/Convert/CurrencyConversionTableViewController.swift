@@ -187,9 +187,6 @@ extension TableViewDataSource {
     }
 
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let cls = String(describing: type(of: cell))
-        print("tableView: willDisplay:\(cls) forRowAt:\(indexPath)")
-
         if let cell = cell as? CurrencyTableViewCell {
             cell.delegate = self
             cell.indexPath = indexPath
